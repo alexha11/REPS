@@ -1,15 +1,120 @@
 import com.github.tototoshi.csv._
 import java.io.File
 
-object Main extends App {
-  val HydroCSV = CSVReader.open(new File("./src/main/scala/Hydro.csv"))
-  val SolarCSV = CSVReader.open(new File("./src/main/scala/Solar.csv"))
-  val WindCSV = CSVReader.open(new File("./src/main/scala/Wind.csv"))
-  val HydroData = HydroCSV.all()
-  val SolarData = SolarCSV.all()
-  val WindData = WindCSV.all()
 
-  var running = true
+object Main extends App {
+  def mean(data: List[List[String]]): Unit = {
+    if (data.isEmpty) {
+      println("No data available.")
+      return
+    }
+
+    val values = data.flatMap(_.tail) // Exclude the header row
+    val numericValues = values.flatMap(str => scala.util.Try(str.toDouble).toOption)
+
+    if (numericValues.nonEmpty) {
+      val mean = numericValues.sum / numericValues.length
+      println(s"Mean: $mean")
+    } else {
+      println("No numeric data available.")
+    }
+  }
+
+  def median(data: List[List[String]]): Unit = {
+    if (data.isEmpty) {
+      println("No data available.")
+      return
+    }
+
+    val values = data.flatMap(_.tail) // Exclude the header row
+    val numericValues = values.flatMap(str => scala.util.Try(str.toDouble).toOption).sorted
+
+    if (numericValues.nonEmpty) {
+      val length = numericValues.length
+      val median =
+        if (length % 2 == 0)
+          (numericValues(length / 2 - 1) + numericValues(length / 2)) / 2.0
+        else
+          numericValues(length / 2)
+
+      println(s"Median: $median")
+    } else {
+      println("No numeric data available.")
+    }
+  }
+
+  def mode(data: List[List[String]]): Unit = {
+    if (data.isEmpty) {
+      println("No data available.")
+      return
+    }
+
+    val values = data.flatMap(_.tail) // Exclude the header row
+    val occurrences = values.groupBy(identity).mapValues(_.size)
+
+    if (occurrences.nonEmpty) {
+      val maxCount = occurrences.values.max
+      val modes = occurrences.filter(_._2 == maxCount).keys.toList
+
+      if (modes.length == 1) {
+        println(s"Mode: ${modes.head}")
+      } else {
+        println("Multiple modes found. Choosing one mode:")
+        println(s"Mode: ${modes.head}")
+      }
+    } else {
+      println("No data available.")
+    }
+  }
+
+  def range(data: List[List[String]]): Unit = {
+    if (data.isEmpty) {
+      println("No data available.")
+      return
+    }
+
+    val values = data.flatMap(_.tail) // Exclude the header row
+    val numericValues = values.flatMap(str => scala.util.Try(str.toDouble).toOption)
+
+    if (numericValues.nonEmpty) {
+      val minValue = numericValues.min
+      val maxValue = numericValues.max
+      val rangeValue = maxValue - minValue
+
+      println(s"Range: $rangeValue")
+    } else {
+      println("No numeric data available.")
+    }
+  }
+
+  def midrange(data: List[List[String]]): Unit = {
+    if (data.isEmpty) {
+      println("No data available.")
+      return
+    }
+
+    val values = data.flatMap(_.tail) // Exclude the header row
+    val numericValues = values.flatMap(str => scala.util.Try(str.toDouble).toOption)
+
+    if (numericValues.nonEmpty) {
+      val minValue = numericValues.min
+      val maxValue = numericValues.max
+      val midrangeValue = (minValue + maxValue) / 2
+
+      println(s"Midrange: $midrangeValue")
+    } else {
+      println("No numeric data available.")
+    }
+  }
+
+  private val HydroCSV = CSVReader.open(new File("./src/main/scala/Hydro.csv"))
+  private val SolarCSV = CSVReader.open(new File("./src/main/scala/Solar.csv"))
+  private val WindCSV = CSVReader.open(new File("./src/main/scala/Wind.csv"))
+  private val HydroData = HydroCSV.all()
+  private val SolarData = SolarCSV.all()
+  private val WindData = WindCSV.all()
+
+  private var running = true
 
   while (running) {
     println("Menu:")
@@ -23,14 +128,23 @@ object Main extends App {
 
     choice match {
       case 1 =>
-        println("Hydro Data:")
-        HydroData.foreach(println)
+        mean(HydroData)
+        median(HydroData)
+        mode(HydroData)
+        range(HydroData)
+        midrange(HydroData)
       case 2 =>
-        println("Solar Data:")
-        SolarData.foreach(println)
+        mean(SolarData)
+        median(SolarData)
+        mode(SolarData)
+        range(SolarData)
+        midrange(SolarData)
       case 3 =>
-        println("Wind Data:")
-        WindData.foreach(println)
+        mean(WindData)
+        median(WindData)
+        mode(WindData)
+        range(WindData)
+        midrange(WindData)
       case 4 =>
         running = false
         println("Goodbye!")
