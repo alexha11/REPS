@@ -1,8 +1,29 @@
 import com.github.tototoshi.csv._
 import java.io.File
-
+import sys.process._
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 object Main extends App {
+
+  val today = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
+  val windURL = s"https://api.fingrid.fi/v1/variable/75/events/csv?start_time=2023-02-01T00%3A00%3A00%2B02%3A00&end_time="+ today +"T00%3A00%3A00%2B02%3A00"
+  val windCMD = s"curl -X GET --header 'Accept: text/csv' --header 'x-api-key: cGYPhIzJmk19e3jk7smz2a7vZfEmoL9U36nM2l8T' '$windURL' -o Wind.csv"
+  val solarURL = s"https://api.fingrid.fi/v1/variable/248/events/csv?start_time=2023-02-01T00%3A00%3A00%2B02%3A00&end_time=" + today + "T00%3A00%3A00%2B02%3A00"
+  val solarCMD = s"curl -X GET --header 'Accept: text/csv' --header 'x-api-key: cGYPhIzJmk19e3jk7smz2a7vZfEmoL9U36nM2l8T' '$solarURL' -o Solar.csv"
+  val hydroURL = s"https://api.fingrid.fi/v1/variable/191/events/csv?start_time=2023-02-01T00%3A00%3A00%2B02%3A00&end_time=" + today + "T00%3A00%3A00%2B02%3A00"
+  val hydroCMD = s"curl -X GET --header 'Accept: text/csv' --header 'x-api-key: cGYPhIzJmk19e3jk7smz2a7vZfEmoL9U36nM2l8T' '$hydroURL' -o Hydro.csv"
+
+  val windExitCode = windCMD.!
+  val solarExitCode = solarCMD.!
+  val hydroExitCode = hydroCMD.!
+
+  if (windExitCode == 0 || solarExitCode == 0 || hydroExitCode == 0) {
+    println("CSV file downloaded and stored.")
+  } else {
+    println("Failed to download the CSV file.")
+  }
+
   def mean(data: List[List[String]]): Unit = {
     if (data.isEmpty) {
       println("No data available.")
@@ -107,9 +128,9 @@ object Main extends App {
     }
   }
 
-  private val HydroCSV = CSVReader.open(new File("./src/main/scala/Hydro.csv"))
-  private val SolarCSV = CSVReader.open(new File("./src/main/scala/Solar.csv"))
-  private val WindCSV = CSVReader.open(new File("./src/main/scala/Wind.csv"))
+  private val HydroCSV = CSVReader.open(new File("Hydro.csv"))
+  private val SolarCSV = CSVReader.open(new File("Solar.csv"))
+  private val WindCSV = CSVReader.open(new File("Wind.csv"))
   private val HydroData = HydroCSV.all()
   private val SolarData = SolarCSV.all()
   private val WindData = WindCSV.all()
