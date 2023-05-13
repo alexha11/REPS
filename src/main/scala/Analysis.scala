@@ -103,4 +103,22 @@ object Analysis {
       println("No numeric data available.")
     }
   }
+
+  def minimum(data: List[List[String]]): Unit = {
+    if (data.isEmpty) {
+      println("No data available.")
+      return
+    }
+
+    val values = data.flatMap(_.tail) // Exclude the header row
+    val numericValues = values.flatMap(str => scala.util.Try(str.toDouble).toOption)
+
+    if (numericValues.nonEmpty) {
+      val minValue = numericValues.min
+      println(s"Minimum Value: $minValue")
+    } else {
+      println("No numeric data available.")
+    }
+  }
+
 }

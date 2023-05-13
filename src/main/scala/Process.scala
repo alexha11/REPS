@@ -1,4 +1,4 @@
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 import scala.util.{Failure, Success, Try}
 
@@ -28,18 +28,19 @@ object Process {
   }
 
   def viewData(dataHydro: Seq[RenewableData], dataSolar: Seq[RenewableData], dataWind: Seq[RenewableData]): Unit = {
-    val choiceResult = readIntFromStdIn("Plant:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter your choice: ")
-    val choice2Result = readIntFromStdIn("Filter By:\n1. Last hour\n2. Last day\n3. Last week\n4. Last month\nPlease enter your choice: ")
-    val choice3Result = readIntFromStdIn("Sort By:\n1. Time\n2. Production Value\nPlease enter your choice: ")
-    val choice4Result = readIntFromStdIn("Ascending or Descending:\n1. Ascending\n2. Descending\nPlease enter your choice: ")
-
     val currentTime = LocalDateTime.now().minusHours(24)
+
+    val choiceResult = readIntFromStdIn("Plant:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter your choice: ")
+    val choice2Result = readIntFromStdIn("Filter By:\n1. Last hour\n2. Last day\n3. Last week\n4. Last month\n5. Search for a date\nPlease enter your choice: ")
 
     val (startTime, endTime) = choice2Result.flatMap {
       case 1 => Success((currentTime.minusHours(1), currentTime))
       case 2 => Success((currentTime.minusDays(1), currentTime))
       case 3 => Success((currentTime.minusDays(7), currentTime))
       case 4 => Success((currentTime.minusDays(30), currentTime))
+      case 5 =>
+        val searchDate = readDateFromStdIn()
+        Success((searchDate.atStartOfDay(), searchDate.plusDays(1).atStartOfDay().minusSeconds(1)))
       case _ => Failure(new IllegalArgumentException("Invalid filter choice"))
     }.getOrElse {
       println("Invalid choice. Please try again.")
@@ -55,7 +56,10 @@ object Process {
       println("Invalid choice. Please try again.")
       return
     }
-    
+
+    val choice3Result = readIntFromStdIn("Sort By:\n1. Time\n2. Production Value\nPlease enter your choice: ")
+    val choice4Result = readIntFromStdIn("Ascending or Descending:\n1. Ascending\n2. Descending\nPlease enter your choice: ")
+
     val sortedFilteredData = choice3Result.flatMap {
       case 1 => Success(filteredData.sortBy(_.startTime))
       case 2 => Success(filteredData.sortBy(_.powerProduction))
@@ -64,7 +68,7 @@ object Process {
       println("Invalid choice. Please try again.")
       return
     }
-    
+
     val sortedFilteredDataOrder = choice4Result.flatMap {
       case 1 => Success(sortedFilteredData)
       case 2 => Success(sortedFilteredData.reverse)
@@ -80,41 +84,102 @@ object Process {
     }
   }
 
+  private def readDateFromStdIn(): LocalDate = {
+    println("Enter the date (yyyy-MM-dd): ")
+    val input = scala.io.StdIn.readLine()
+    LocalDate.parse(input, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+  }
+
   def viewAnalysis(hydroData: List[List[String]], solarData: List[List[String]], windData: List[List[String]]): Unit = {
-    print("Plant:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter your choice: ")
+    val choiceResult = readIntFromStdIn("Plant:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter your choice: ")
+    val choice2Result = readIntFromStdIn("Filter By:\n1. Last hour\n2. Last day\n3. Last week\n4. Last month\n5. Search for a date\nPlease enter your choice: ")
 
-    val choiceResult = readIntFromStdIn("Please enter your choice: ")
-
-    choiceResult match {
-      case Success(choice) =>
-        choice match {
-          case 1 =>
-            Analysis.mean(hydroData)
-            Analysis.median(hydroData)
-            Analysis.mode(hydroData)
-            Analysis.range(hydroData)
-            Analysis.midrange(hydroData)
-          case 2 =>
-            Analysis.mean(solarData)
-            Analysis.median(solarData)
-            Analysis.mode(solarData)
-            Analysis.range(solarData)
-            Analysis.midrange(solarData)
-          case 3 =>
-            Analysis.mean(windData)
-            Analysis.median(windData)
-            Analysis.mode(windData)
-            Analysis.range(windData)
-            Analysis.midrange(windData)
-          case _ =>
-            println("Invalid choice. Please try again.")
+    val sortedData = (choiceResult, choice2Result) match {
+      case (Success(choice), Success(choice2)) =>
+        val data = (choice, choice2) match {
+          case (1, _) => hydroData
+          case (2, _) => solarData
+          case (3, _) => windData
+          case _ => List.empty[List[String]]
         }
-      case Failure(_) =>
-        println("Invalid input. Please enter a valid choice.")
+        val filteredData = filterDataByChoice(choice2, data)
+        sortData(filteredData)
+
+      case _ =>
+        println("Invalid input. Please enter valid choices.")
+        return
+    }
+
+    displaySortedData(sortedData)
+  }
+
+  private def filterDataByChoice(choice: Int, data: List[List[String]]): List[List[String]] = {
+    val currentTime = LocalDateTime.now().minusHours(24)
+
+    choice match {
+      case 1 => data.filter { line =>
+        val dateTime = LocalDateTime.parse(line(0), dateTimeFormatter)
+        dateTime.isAfter(currentTime.minusHours(1)) && dateTime.isBefore(currentTime)
+      }
+      case 2 => data.filter { line =>
+        val dateTime = LocalDateTime.parse(line(0), dateTimeFormatter)
+        dateTime.isAfter(currentTime.minusDays(1)) && dateTime.isBefore(currentTime)
+      }
+      case 3 => data.filter { line =>
+        val dateTime = LocalDateTime.parse(line(0), dateTimeFormatter)
+        dateTime.isAfter(currentTime.minusDays(7)) && dateTime.isBefore(currentTime)
+      }
+      case 4 => data.filter { line =>
+        val dateTime = LocalDateTime.parse(line(0), dateTimeFormatter)
+        dateTime.isAfter(currentTime.minusDays(30)) && dateTime.isBefore(currentTime)
+      }
+      case 5 =>
+        val searchDate = readDateFromStdIn()
+        data.filter { line =>
+          val dateTime = LocalDateTime.parse(line(0), dateTimeFormatter)
+          dateTime.isAfter(searchDate.atStartOfDay()) && dateTime.isBefore(searchDate.plusDays(1).atStartOfDay().minusSeconds(1))
+        }
+      case _ =>
+        println("Invalid choice. Returning empty data.")
+        List.empty[List[String]]
     }
   }
 
-  def checkData(dataHydro: Seq[RenewableData], dataSolar: Seq[RenewableData], dataWind: Seq[RenewableData]): Unit = {
+  private def sortData(data: List[List[String]]): List[List[String]] = {
+    data.sortBy(line => LocalDateTime.parse(line(0), dateTimeFormatter))
+  }
+
+  private def displaySortedData(sortedData: List[List[String]]): Unit = {
+    if (sortedData.isEmpty) {
+      println("No data to display.")
+    } else {
+      println("Sorted Data:")
+      sortedData.foreach { line =>
+        val dateTime = LocalDateTime.parse(line(0), dateTimeFormatter)
+        val formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+        val value = line(3).toDouble
+        println(s"Date-Time: $formattedDateTime  |  Value: $value")
+      }
+
+      val values = sortedData.map(line => line(1).toDouble)
+      val mean = Analysis.mean(sortedData)
+      val median = Analysis.median(sortedData)
+      val mode = Analysis.mode(sortedData)
+      val range = Analysis.range(sortedData)
+      val midrange = Analysis.midrange(sortedData)
+      val minimum = Analysis.minimum(sortedData)
+
+      println(s"\nAnalysis:")
+      println(s"Mean: $mean")
+      println(s"Median: $median")
+      println(s"Mode: $mode")
+      println(s"Range: $range")
+      println(s"Midrange: $midrange")
+      println(s"Minimum value: $minimum")
+    }
+  }
+
+  def checkData(dataHydro: Seq[RenewableData], dataSolar: Seq[RenewableData], dataWind: Seq[RenewableData], powerPlants: List[PowerPlant]): Unit = {
     print("Plant:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter your choice: ")
 
     val choiceResult = readIntFromStdIn("Please enter your choice: ")
@@ -127,14 +192,20 @@ object Process {
 
         choice match {
           case 1 =>
-            val data = Process.filterDataByTimePeriod(dataHydro, startTime, endTime)
-            processDataForCheckData(data)
+            val powerPlant = powerPlants.find(_.name == "Hydro")
+            powerPlant.foreach { plant =>
+              if (plant.shutdown) {
+                println("Warning: Hydro power plant is shut down.")
+              }
+            }
+            val data = filterDataByTimePeriod(dataHydro, startTime, endTime)
+            processDataForCheckData(data, 1500)
           case 2 =>
-            val data = Process.filterDataByTimePeriod(dataSolar, startTime, endTime)
-            processDataForCheckData(data)
+            val data = filterDataByTimePeriod(dataSolar, startTime, endTime)
+            processDataForCheckData(data, 250)
           case 3 =>
-            val data = Process.filterDataByTimePeriod(dataWind, startTime, endTime)
-            processDataForCheckData(data)
+            val data = filterDataByTimePeriod(dataWind, startTime, endTime)
+            processDataForCheckData(data, 1500)
           case _ =>
             println("Invalid choice. Please try again.")
         }
@@ -143,11 +214,11 @@ object Process {
     }
   }
 
-  private def processDataForCheckData(data: Seq[RenewableData]): Unit = {
-    val (below1000Count, totalCount) = data.foldLeft((0, 0)) { case ((below1000Count, totalCount), data) =>
-      val newBelow1000Count = if (data.powerProduction < 1000) below1000Count + 1 else below1000Count
-      (newBelow1000Count, totalCount + 1)
+  private def processDataForCheckData(data: Seq[RenewableData], Threshold: Int): Unit = {
+    val (belowThreshold, totalCount) = data.foldLeft((0, 0)) { case ((belowThreshold, totalCount), data) =>
+      val newBelowThreshold = if (data.powerProduction < Threshold) belowThreshold + 1 else belowThreshold
+      (newBelowThreshold, totalCount + 1)
     }
-    println(s"Out of $totalCount values, it went under 1000 $below1000Count times.")
+    println(s"Out of $totalCount values scanned in the past 24 hours, $belowThreshold values were under the acceptable threshold of $Threshold.")
   }
 }
