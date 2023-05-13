@@ -30,8 +30,8 @@ object Process {
   def viewData(dataHydro: Seq[RenewableData], dataSolar: Seq[RenewableData], dataWind: Seq[RenewableData]): Unit = {
     val choiceResult = readIntFromStdIn("Plant:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter your choice: ")
     val choice2Result = readIntFromStdIn("Filter By:\n1. Last hour\n2. Last day\n3. Last week\n4. Last month\nPlease enter your choice: ")
-    val choice3Result = readIntFromStdIn("Sort By:\n1. Start Time\n2. End Time\n3. Power Production\nPlease enter your choice: ")
-    var choice4Result = readIntFromStdIn("Ascending or Descending:\n1. Ascending\n2. Descending\nPlease enter your choice: ")
+    val choice3Result = readIntFromStdIn("Sort By:\n1. Time\n2. Production Value\nPlease enter your choice: ")
+    val choice4Result = readIntFromStdIn("Ascending or Descending:\n1. Ascending\n2. Descending\nPlease enter your choice: ")
 
     val currentTime = LocalDateTime.now().minusHours(24)
 
@@ -58,8 +58,7 @@ object Process {
     
     val sortedFilteredData = choice3Result.flatMap {
       case 1 => Success(filteredData.sortBy(_.startTime))
-      case 2 => Success(filteredData.sortBy(_.endTime))
-      case 3 => Success(filteredData.sortBy(_.powerProduction))
+      case 2 => Success(filteredData.sortBy(_.powerProduction))
       case _ => Failure(new IllegalArgumentException("Invalid sort choice"))
     }.getOrElse {
       println("Invalid choice. Please try again.")
