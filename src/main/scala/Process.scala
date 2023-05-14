@@ -1,4 +1,3 @@
-import Main.powerPlants
 import com.github.tototoshi.csv.CSVReader
 import java.io.File
 import java.time.{LocalDate, LocalDateTime}
@@ -100,7 +99,7 @@ object Process {
     LocalDate.parse(input, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
   }
   
-  // Added a new method to display the analysis of the data
+  // Added a new method in order to display the analysis of the data
   def viewAnalysis(dataHydro: Seq[RenewableData], dataSolar: Seq[RenewableData], dataWind: Seq[RenewableData]): Unit = {
     val choiceResult = readIntFromStdIn("Plant:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter your choice: ")
     val choice2Result = readIntFromStdIn("Filter By:\n1. Last hour\n2. Last day\n3. Last week\n4. Last month\n5. Search for a date\nPlease enter your choice: ")
@@ -134,23 +133,23 @@ object Process {
     displaySortedData(filteredData.map(data => List(data.startTime.toString, data.endTime.toString, data.powerProduction.toString)).toList)
   }
   
-  // Added a new method to display the analysis of the data
+   // Added a new method to display the analysis of the data
   private def displaySortedData(sortedData: List[List[String]]): Unit = {
     if (sortedData.isEmpty) {
       println("No data to display.")
     } else {
-      println("Data: Anaylsis\n")
-      val mean = Analysis.mean(sortedData)
-      val median = Analysis.median(sortedData)
-      val mode = Analysis.mode(sortedData)
-      val range = Analysis.range(sortedData)
-      val midrange = Analysis.midrange(sortedData)
-      val minimum = Analysis.minimum(sortedData)
+      println("Data: Analysis\n")
+      val mean: Unit = Analysis.mean(sortedData)
+      val median: Unit = Analysis.median(sortedData)
+      val mode: Unit = Analysis.mode(sortedData)
+      val range: Unit = Analysis.range(sortedData)
+      val midrange: Unit = Analysis.midrange(sortedData)
+      val minimum: Unit = Analysis.minimum(sortedData)
     }
   }
   
   // Control the power plant's renewable energy sources
-  def controlPlant(powerPlants: List[PowerPlant]) = {
+  def controlPlant(powerPlants: List[PowerPlant]): Unit = {
     val choiceResult = readIntFromStdIn("Control the power plant's renewable energy sources:\n1. Shut down a plant\n2. Restart a plant\nPlease enter your choice: ")
     choiceResult match {
       case Success(1) =>
@@ -192,7 +191,7 @@ object Process {
             selectedPowerPlant.shutdown = false
             println(s"${selectedPowerPlant.name} power plant has been restarted.")
           } else {
-            println(s"${selectedPowerPlant.name} power plant is already opened.")
+            println(s"${selectedPowerPlant.name} power plant is already open.")
           }
         case Success(_) =>
           println("Invalid power plant choice.")

@@ -1,5 +1,3 @@
-import Process.readIntFromStdIn
-
 import java.time.LocalDateTime
 import scala.annotation.tailrec
 import scala.util.{Failure, Success}
@@ -13,9 +11,9 @@ object Main extends App {
   
   // Create a list of power plants for shutdown
   private val powerPlants = List(
-    PowerPlant("Hydro", shutdown = false),
-    PowerPlant("Solar", shutdown = false),
-    PowerPlant("Wind", shutdown = false)
+    PowerPlant("Hydro"),
+    PowerPlant("Solar"),
+    PowerPlant("Wind")
   )
 
   // Drop the first row of data (column names)
