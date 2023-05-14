@@ -1,5 +1,4 @@
 import Main.powerPlants
-
 import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 import scala.util.{Failure, Success, Try}
@@ -145,6 +144,7 @@ object Process {
       val minimum = Analysis.minimum(sortedData)
     }
   }
+
   def checkData(dataHydro: Seq[RenewableData], dataSolar: Seq[RenewableData], dataWind: Seq[RenewableData], powerPlants: List[PowerPlant]): Unit = {
     print("Plant:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter your choice: ")
     

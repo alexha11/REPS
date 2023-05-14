@@ -127,5 +127,5 @@ object Analysis {
       println("No numeric data available.")
     }
   }
-  
 }
+
