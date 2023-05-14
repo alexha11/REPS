@@ -5,6 +5,7 @@ import scala.annotation.tailrec
 import scala.util.{Failure, Success}
 
 case class RenewableData(startTime: LocalDateTime, endTime: LocalDateTime, powerProduction: Double)
+
 case class PowerPlant(name: String, var shutdown: Boolean = false)
 
 object Main extends App {
@@ -16,7 +17,7 @@ object Main extends App {
     PowerPlant("Solar", shutdown = false),
     PowerPlant("Wind", shutdown = false)
   )
-  
+
   // Drop the first row of data (column names)
   val (dataHydro, dataSolar, dataWind) = (
       Process.createRenewableData(hydroData.drop(1).map(_.toArray)),
@@ -31,7 +32,7 @@ object Main extends App {
     println("3. Check Errors in the past 24 hours")
     println("4. Control a plant")
     println("5. Exit")
-    
+
     val choiceResult = Process.readIntFromStdIn("Please enter your choice: ")
     
     choiceResult match {
@@ -51,7 +52,7 @@ object Main extends App {
             println("Invalid choice. Please try again.")
         }
         println()
-        
+      
         if (choice != 5) // Updated condition to exit the loop if the choice is 5 (Exit)
           runMenu()
       case Failure(_) =>
@@ -59,7 +60,6 @@ object Main extends App {
         runMenu()
     }
   }
-  
   runMenu()
   
 }

@@ -1,6 +1,5 @@
 import Main.powerPlants
 import com.github.tototoshi.csv.CSVReader
-
 import java.io.File
 import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
