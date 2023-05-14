@@ -1,5 +1,7 @@
 import Main.powerPlants
+import com.github.tototoshi.csv.CSVReader
 
+import java.io.File
 import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 import scala.util.{Failure, Success, Try}
@@ -15,6 +17,7 @@ object Process {
     }
   }
   
+  // Added a method to convert data from List[List[String]] to Seq[RenewableData]
   def createRenewableData(data: Seq[Array[String]]): Seq[RenewableData] = {
     data.map { line =>
       RenewableData(
@@ -25,6 +28,7 @@ object Process {
     }
   }
   
+  // Added a method that can filter data by a specific time period
   private def filterDataByTimePeriod(data: Seq[RenewableData], startTime: LocalDateTime, endTime: LocalDateTime): Seq[RenewableData] = {
     data.filter(d => d.startTime.isAfter(startTime) && d.endTime.isBefore(endTime))
   }
@@ -145,53 +149,6 @@ object Process {
       val minimum = Analysis.minimum(sortedData)
     }
   }
-  def checkData(dataHydro: Seq[RenewableData], dataSolar: Seq[RenewableData], dataWind: Seq[RenewableData], powerPlants: List[PowerPlant]): Unit = {
-    print("Plant:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter your choice: ")
-    
-    val choiceResult = readIntFromStdIn("Please enter your choice: ")
-    
-    choiceResult match {
-      case Success(choice) =>
-        val currentTime = LocalDateTime.now().minusHours(24)
-        val startTime = currentTime.minusHours(24)
-        val endTime = currentTime
-        
-        // Checking if the power plant is shut down before processing the data
-        choice match {
-          case 1 =>
-            val powerPlant = powerPlants.find(_.name == "Hydro")
-            powerPlant.foreach { plant =>
-              if (plant.shutdown) {
-                println("Warning: Hydro power plant is shut down.")
-              }
-            }
-            val data = filterDataByTimePeriod(dataHydro, startTime, endTime)
-            processDataForCheckData(data, 1500)
-          case 2 =>
-            val powerPlant = powerPlants.find(_.name == "Solar")
-            powerPlant.foreach { plant =>
-              if (plant.shutdown) {
-                println("Warning: Solar power plant is shut down.")
-              }
-            }
-            val data = filterDataByTimePeriod(dataSolar, startTime, endTime)
-            processDataForCheckData(data, 250)
-          case 3 =>
-            val powerPlant = powerPlants.find(_.name == "Wind")
-            powerPlant.foreach { plant =>
-              if (plant.shutdown) {
-                println("Warning: Wind power plant is shut down.")
-              }
-            }
-            val data = filterDataByTimePeriod(dataWind, startTime, endTime)
-            processDataForCheckData(data, 1500)
-          case _ =>
-            println("Invalid choice. Please try again.")
-        }
-      case Failure(_) =>
-        println("Invalid input. Please enter a valid choice.")
-    }
-  }
   
   // Control the power plant's renewable energy sources
   def controlPlant(powerPlants: List[PowerPlant]) = {
@@ -204,11 +161,11 @@ object Process {
       case Failure(_) =>
         println("Invalid choice. Please try again.")
     }
-  
+    
     // Shutdown a power plant
     def shutDownPowerPlant(powerPlants: List[PowerPlant]): Unit = {
       val choiceResult = Process.readIntFromStdIn("Power Plants:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter the power plant to shut down: ")
-    
+      
       choiceResult match {
         case Success(choice) if choice >= 1 && choice <= 3 =>
           val selectedPowerPlant = powerPlants(choice - 1)
@@ -224,11 +181,11 @@ object Process {
           println("Invalid input. Please enter a valid power plant choice.")
       }
     }
-  
-    // Restart a power plant
-     def restartPowerPlant(powerPlant: List[PowerPlant]): Unit = {
-      val choiceResult = Process.readIntFromStdIn("Power Plants:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter the power plant to restart: ")
     
+    // Restart a power plant
+    def restartPowerPlant(powerPlant: List[PowerPlant]): Unit = {
+      val choiceResult = Process.readIntFromStdIn("Power Plants:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter the power plant to restart: ")
+      
       choiceResult match {
         case Success(choice) if choice >= 1 && choice <= 3 =>
           val selectedPowerPlant = powerPlants(choice - 1)
@@ -246,6 +203,79 @@ object Process {
     }
   }
   
+  // Check the data of the renewable energy sources in the power plant
+  def checkData(dataHydro: Seq[RenewableData], dataSolar: Seq[RenewableData], dataWind: Seq[RenewableData], powerPlants: List[PowerPlant]): Unit = {
+    print("Plant:\n1. Hydro\n2. Solar\n3. Wind\nPlease enter your choice: ")
+    
+    val choiceResult = readIntFromStdIn("Please enter your choice: ")
+    
+    choiceResult match {
+      case Success(choice) =>
+        val currentTime = LocalDateTime.now().minusHours(24)
+        val startTime = currentTime.minusHours(24)
+        val endTime = currentTime
+        
+        // Checking if the equipment is malfunctioning and the power plant is shut down
+        choice match {
+          case 1 =>
+            val powerPlant = powerPlants.find(_.name == "Hydro")
+            powerPlant.foreach { plant =>
+              if (plant.shutdown) {
+                println("Warning: Hydro power plant is shut down.")
+              } else {
+                if (!isEquipmentMalfunction("hydro.csv")) {
+                  println("Warning: Hydro power plant is malfunctioning.")
+                }
+                else {
+                  println("All the equipment of Hydro power plant is working properly.")
+                }
+              }
+            }
+            
+            val data = filterDataByTimePeriod(dataHydro, startTime, endTime)
+            processDataForCheckData(data, 1500)
+          case 2 =>
+            val powerPlant = powerPlants.find(_.name == "Solar")
+            powerPlant.foreach { plant =>
+              if (plant.shutdown) {
+                println("Warning: Solar power plant is shut down.")
+              } else {
+                if (!isEquipmentMalfunction("solar.csv")) {
+                  println("Warning: Solar power plant is malfunctioning.")
+                }
+                else {
+                  println("All the equipment of Solar power plant is working properly.")
+                }
+              }
+            }
+            
+            val data = filterDataByTimePeriod(dataSolar, startTime, endTime)
+            processDataForCheckData(data, 250)
+          case 3 =>
+            val powerPlant = powerPlants.find(_.name == "Wind")
+            powerPlant.foreach { plant =>
+              if (plant.shutdown) {
+                println("Warning: Wind power plant is shut down.")
+              } else {
+                if (!isEquipmentMalfunction("wind.csv")) {
+                  println("Warning: Wind power plant is malfunctioning.")
+                }
+                else {
+                  println("All the equipment of Wind power plant is working properly.")
+                }
+              }
+            }
+            
+            val data = filterDataByTimePeriod(dataWind, startTime, endTime)
+            processDataForCheckData(data, 1500)
+          case _ =>
+            println("Invalid choice. Please try again.")
+        }
+      case Failure(_) =>
+        println("Invalid input. Please enter a valid choice.")
+    }
+  }
+  
   //Checks if the data is below the threshold and prints the result
   private def processDataForCheckData(data: Seq[RenewableData], Threshold: Int): Unit = {
     val (belowThreshold, totalCount) = data.foldLeft((0, 0)) { case ((belowThreshold, totalCount), data) =>
@@ -253,5 +283,22 @@ object Process {
       (newBelowThreshold, totalCount + 1)
     }
     println(s"Out of $totalCount values scanned in the past 24 hours, $belowThreshold values were under the acceptable threshold of $Threshold.")
+  }
+  
+  // Checks if the equipment is malfunctioning
+  private def isEquipmentMalfunction(fileName: String): Boolean = {
+    val file = new File(fileName)
+    if (file.exists()) {
+      val reader = CSVReader.open(file)
+      val data = reader.all()
+      reader.close()
+      if (data.nonEmpty) {
+        true
+      } else {
+        false
+      }
+    } else {
+      false
+    }
   }
 }
