@@ -17,7 +17,7 @@ object Main extends App {
     PowerPlant("Solar", shutdown = false),
     PowerPlant("Wind", shutdown = false)
   )
- 
+
   // Drop the first row of data (column names)
   val (dataHydro, dataSolar, dataWind) = (
       Process.createRenewableData(hydroData.drop(1).map(_.toArray)),
