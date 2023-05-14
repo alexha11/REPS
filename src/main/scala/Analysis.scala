@@ -1,13 +1,15 @@
 object Analysis {
+  
+  //Calculate the mean of a list of numbers
   def mean(data: List[List[String]]): Unit = {
     if (data.isEmpty) {
       println("No data available.")
       return
     }
-
+    
     val values = data.flatMap(_.tail) // Exclude the header row
     val numericValues = values.flatMap(str => scala.util.Try(str.toDouble).toOption)
-
+    
     if (numericValues.nonEmpty) {
       val mean = numericValues.sum / numericValues.length
       println(s"Mean: $mean")
@@ -15,16 +17,17 @@ object Analysis {
       println("No numeric data available.")
     }
   }
-
+  
+  //Calculate the median of a list of numbers
   def median(data: List[List[String]]): Unit = {
     if (data.isEmpty) {
       println("No data available.")
       return
     }
-
+    
     val values = data.flatMap(_.tail) // Exclude the header row
     val numericValues = values.flatMap(str => scala.util.Try(str.toDouble).toOption).sorted
-
+    
     if (numericValues.nonEmpty) {
       val length = numericValues.length
       val median =
@@ -32,27 +35,28 @@ object Analysis {
           (numericValues(length / 2 - 1) + numericValues(length / 2)) / 2.0
         else
           numericValues(length / 2)
-
+      
       println(s"Median: $median")
     } else {
       println("No numeric data available.")
     }
   }
-
+  
+  //Calculate the mode of a list of numbers
   def mode(data: List[List[String]]): Unit = {
     if (data.isEmpty) {
       println("No data available.")
       return
     }
-
+    
     val values = data.flatMap(_.tail) // Exclude the header row
     val occurrences = values.groupBy(identity).view.mapValues(_.size).toMap
-
-
+    
+    
     if (occurrences.nonEmpty) {
       val maxCount = occurrences.values.max
       val modes = occurrences.filter(_._2 == maxCount).keys.toList
-
+      
       if (modes.length == 1) {
         println(s"Mode: ${modes.head}")
       } else {
@@ -63,44 +67,65 @@ object Analysis {
       println("No data available.")
     }
   }
-
+  
+  //Calculate the range of a list of numbers
   def range(data: List[List[String]]): Unit = {
     if (data.isEmpty) {
       println("No data available.")
       return
     }
-
+    
     val values = data.flatMap(_.tail) // Exclude the header row
     val numericValues = values.flatMap(str => scala.util.Try(str.toDouble).toOption)
-
+    
     if (numericValues.nonEmpty) {
       val minValue = numericValues.min
       val maxValue = numericValues.max
       val rangeValue = maxValue - minValue
-
+      
       println(s"Range: $rangeValue")
     } else {
       println("No numeric data available.")
     }
   }
-
+  
+  //Calculate the midrange of a list of numbers
   def midrange(data: List[List[String]]): Unit = {
     if (data.isEmpty) {
       println("No data available.")
       return
     }
-
+    
     val values = data.flatMap(_.tail) // Exclude the header row
     val numericValues = values.flatMap(str => scala.util.Try(str.toDouble).toOption)
-
+    
     if (numericValues.nonEmpty) {
       val minValue = numericValues.min
       val maxValue = numericValues.max
       val midrangeValue = (minValue + maxValue) / 2
-
+      
       println(s"Midrange: $midrangeValue")
     } else {
       println("No numeric data available.")
     }
   }
+  
+  //Calculate the minimum of a list of numbers
+  def minimum(data: List[List[String]]): Unit = {
+    if (data.isEmpty) {
+      println("No data available.")
+      return
+    }
+    
+    val values = data.flatMap(_.tail) // Exclude the header row
+    val numericValues = values.flatMap(str => scala.util.Try(str.toDouble).toOption)
+    
+    if (numericValues.nonEmpty) {
+      val minValue = numericValues.min
+      println(s"Minimum Value: $minValue")
+    } else {
+      println("No numeric data available.")
+    }
+  }
+  
 }
