@@ -7,7 +7,8 @@
 
 - The system is capable of providing a view of the power plant's energy generation and storage capacity. It's also possible to filter the data on an hourly, daily, weekly and monthly basis and sort the data where possible, and allow a user to search for required data stored in the system.
 
-![Screen Shot 2023-05-14 at 11 22 39 PM](https://github.com/Pois0nous/REPS/assets/113895096/19c7b33c-e410-4906-b5e3-99e240c1a766)
+![Screen Shot 2023-05-17 at 11 49 51 AM](https://github.com/alexha11/REPS/assets/113895096/e2ef9598-ea97-464f-8ed9-e20675c47ab4)
+
 
 - The system is able to analyse the data collected from renewable sources. It's also possible to filter the data on an hourly, daily, weekly and monthly basis and allow a user to search for required data stored in the system.
 Data Analysis includes:
@@ -16,16 +17,18 @@ Data Analysis includes:
   - Mode
   - Range
   - Midrange
-  
-![Screen Shot 2023-05-14 at 11 22 44 PM](https://github.com/Pois0nous/REPS/assets/113895096/eed4d253-a5e7-4d64-b59b-1f0f05cbfb70)
 
+![Screen Shot 2023-05-17 at 11 48 11 AM](https://github.com/alexha11/REPS/assets/113895096/532dfd8c-2a7e-47c4-8f96-ff8a3a3bc732)
+
+  
 - The system is capable of detecting and handling issues with renewable energy sources, such as low energy output, and equipment malfunction, generating alerts for the
 operators accordingly.
 
-![Screen Shot 2023-05-14 at 11 22 48 PM](https://github.com/Pois0nous/REPS/assets/113895096/e0d25069-2860-4d78-90ff-2a11313c0709)
+![Screen Shot 2023-05-17 at 11 48 21 AM](https://github.com/alexha11/REPS/assets/113895096/3f999142-3545-41d1-a83a-3f1b88db65e3)
+
 - The system is able to control the power plant's renewable enegy souces, including solar panels, wind turbines, and hydropower
 
-![Screen Shot 2023-05-14 at 11 22 53 PM](https://github.com/Pois0nous/REPS/assets/113895096/138b0b23-6090-4b8c-8b6e-57879d515466)
+![Screen Shot 2023-05-17 at 11 48 38 AM](https://github.com/alexha11/REPS/assets/113895096/a2b53685-33ad-44c3-bb17-4b06e1e95140)
 
 # Class diagram
 ![Screen Shot 2023-05-14 at 11 26 15 PM](https://github.com/Pois0nous/REPS/assets/113895096/b275307a-5f2f-4416-8ed7-ddf7383f8e24)
