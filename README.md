@@ -5,12 +5,12 @@
 
 ![Screen Shot 2023-05-14 at 11 22 24 PM](https://github.com/Pois0nous/REPS/assets/113895096/4b73410b-7232-4114-9b2d-4e8cbfa6b34e)
 
-- The system is capable of providing a view of the power plant's energy generation and storage capacity. It's also possible to filter the data on an hourly, daily, weekly and monthly basis and sort the data where possible, and allow a user to search for required data stored in the system.
+- The system is capable of providing a view of the power plant's energy generation and storage capacity. It's also possible to filter the data on an hourly, daily, weekly, and monthly basis and sort the data where possible, and allow a user to search for required data stored in the system.
 
 ![Screen Shot 2023-05-17 at 11 49 51 AM](https://github.com/alexha11/REPS/assets/113895096/e2ef9598-ea97-464f-8ed9-e20675c47ab4)
 
 
-- The system is able to analyse the data collected from renewable sources. It's also possible to filter the data on an hourly, daily, weekly and monthly basis and allow a user to search for required data stored in the system.
+- The system is able to analyze the data collected from renewable sources. It's also possible to filter the data on an hourly, daily, weekly, and monthly basis and allow a user to search for required data stored in the system.
 Data Analysis includes:
   - Mean
   - Median
@@ -26,7 +26,7 @@ operators accordingly.
 
 ![Screen Shot 2023-05-17 at 11 48 21 AM](https://github.com/alexha11/REPS/assets/113895096/3f999142-3545-41d1-a83a-3f1b88db65e3)
 
-- The system is able to control the power plant's renewable enegy souces, including solar panels, wind turbines, and hydropower
+- The system is able to control the power plant's renewable energy souces, including solar panels, wind turbines, and hydropower
 
 ![Screen Shot 2023-05-17 at 11 48 38 AM](https://github.com/alexha11/REPS/assets/113895096/a2b53685-33ad-44c3-bb17-4b06e1e95140)
 
